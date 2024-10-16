@@ -1,0 +1,38 @@
+pipeline:
+  name: CreateFilePipeline
+  identifier: CreateFilePipeline
+  stages:
+    - stage:
+        name: CreateFileStage
+        identifier: CreateFileStage
+        type: Build
+        spec:
+          serviceDependencies: []
+          execution:
+            steps:
+              - step:
+                  name: Clone Repository
+                  identifier: CloneRepository
+                  type: GitClone
+                  spec:
+                    connectorRef: Github_connector
+                    repoName: Harnesstest
+                    branch: master 
+
+              - step:
+                  name: Create File
+                  identifier: CreateFile
+                  type: ShellScript
+                  spec:
+                    shell: Bash
+                    command: |
+                      echo "Creating new.txt file..."
+                      echo "This is a new file created by Harness pipeline" > new.txt
+                      git config --global user.email "pasulavinithkumar@gmail.com"
+                      git config --global user.name "Vinith1397"
+                      git add new.txt
+                      git commit -m "Add new.txt file via Harness pipeline"
+                      git push origin main
+                    envVariables:
+                      - name: GIT_SSH_COMMAND
+                        value: ssh -i /path/to/your/private/key # Path to your SSH key for authentication, adjust if using HTTPS
